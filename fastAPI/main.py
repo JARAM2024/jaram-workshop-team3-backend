@@ -2,9 +2,11 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import uvicorn
 
-app = FastAPI()
+app = FastAPI() #fastapi 바탕으로 app 이라는 인스턴스를 만들기 
 
-#uvicorn main:app --reload 로 실행
+'''
+uvicorn main:app --reload
+'''
 
 # 센서 데이터 모델 정의
 class SensorData(BaseModel):
@@ -38,11 +40,11 @@ async def get_status():
 @app.post("/door")
 async def control_door(action: str):
     if action == "open":
-        # 실제 문 열기 코드를 여기 추가
+        # 문열기코드추가
         sensor_data["door_open"] = True
         return {"message": "Door opened"}
     elif action == "close":
-        # 실제 문 닫기 코드를 여기 추가
+        # 문열기코드추가
         sensor_data["door_open"] = False
         return {"message": "Door closed"}
     else:
@@ -52,7 +54,7 @@ async def control_door(action: str):
 @app.get("/umbrella")
 async def check_umbrella():
     if not sensor_data["umbrella_present"] and sensor_data["door_open"]:
-        # 알림 전송 코드를 여기 추가 (예: 이메일, SMS, Push Notification)
+        # 알림전송코드추가 (이메일, SMS, Push Notification 등등)
         return {"alarm": "Umbrella not taken but door is open!"}
     return {"alarm": "All clear"}
 
@@ -70,3 +72,9 @@ async def read_root():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
+
+'''
+https://wikidocs.net/162082
+''' 
+
