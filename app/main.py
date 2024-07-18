@@ -1,21 +1,16 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
+from pydantic import BaseModel
 from app.database import SessionLocal, init_db
 from app.models import SensorData
 from app.crud import create_sensor_data, update_sensor_data, get_sensor_data
-from pydantic import BaseModel
 
-#uvicorn main:app --reload
-#uvicorn app.main:app --reload
+app = FastAPI()
 
-
-app = FastAPI() #app 인스턴스 생성
-
-# 센서 데이터 모델
 class SensorDataCreate(BaseModel):
     temperature: float
     humidity: float
-    is_raining: bool
+    is_raining: bool = False
     umbrella_present: bool
     door_open: bool
 
@@ -29,6 +24,11 @@ async def on_startup():
 
 @app.post("/update")
 async def update_sensor_data_endpoint(data: SensorDataCreate, db: AsyncSession = Depends(get_db)):
+    if data.humidity >= 80:
+        data.is_raining = True
+    else:
+        data.is_raining = False
+
     db_data = await get_sensor_data(db, 1)  # Assuming single sensor with ID 1
     if db_data:
         updated_data = await update_sensor_data(db, db_data.id, data.dict())
@@ -83,6 +83,3 @@ async def check_alarm(db: AsyncSession = Depends(get_db)):
 @app.get("/")
 async def read_root():
     return {"message": "Welcome to the Umbrella Management API"}
-
-
-
