@@ -2,7 +2,10 @@
 참조
 '''
 
-
+'''
+실행코드
+uvicorn main:app --reload
+'''
 '''
 https://wikidocs.net/162082
 https://wikidocs.net/175214

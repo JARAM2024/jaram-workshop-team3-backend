@@ -5,6 +5,8 @@ import threading
 import requests
 import time
 
+#uvicorn main:app --reload
+
 app = FastAPI()  # FastAPI 바탕으로 app 인스턴스 생성
 
 # 센서 데이터 모델 정의
@@ -91,4 +93,9 @@ thread.start()
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
+
+
+
+
 
