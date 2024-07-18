@@ -1,12 +1,11 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import uvicorn
+import threading
+import requests
+import time
 
-app = FastAPI() #fastapi 바탕으로 app 이라는 인스턴스를 만들기 
-
-'''
-uvicorn main:app --reload
-'''
+app = FastAPI()  # FastAPI 바탕으로 app 인스턴스 생성
 
 # 센서 데이터 모델 정의
 class SensorData(BaseModel):
@@ -70,11 +69,26 @@ async def check_alarm():
 async def read_root():
     return {"message": "Welcome to the Umbrella Management API"}
 
+# 주기적으로 센서 데이터를 서버에 전송하는 함수
+def update_sensor_data():
+    url = "http://localhost:8000/update"
+    while True:
+        sensor_data = {
+            "temperature": 25.0,
+            "humidity": 60.0,
+            "is_raining": False,
+            "umbrella_present": True,
+            "door_open": False
+        }
+        response = requests.post(url, json=sensor_data)
+        print(response.json())
+        time.sleep(10)  # 10초마다 데이터를 전송
+
+# 데이터 전송을 thread 시작
+thread = threading.Thread(target=update_sensor_data)
+thread.daemon = True
+thread.start()
+
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
-
-
-'''
-https://wikidocs.net/162082
-''' 
 
