@@ -14,15 +14,16 @@ class SensorDataCreate(BaseModel):
     umbrella_present: bool
     door_open: bool
 
-async def get_db():
+async def get_db(): # 의존성 정의, 각 요청마다 데이터베이스 세션을 생성하고 반환
     async with SessionLocal() as session:
         yield session
 
-@app.on_event("startup")
+@app.on_event("startup") # 시작 시 베이터베이스를 초기화
 async def on_startup():
     await init_db()
 
-@app.post("/update")
+
+@app.post("/update") # 습도가 80 이상이면 is_raining = True로 설정 
 async def update_sensor_data_endpoint(data: SensorDataCreate, db: AsyncSession = Depends(get_db)):
     if data.humidity >= 80:
         data.is_raining = True
@@ -38,7 +39,7 @@ async def update_sensor_data_endpoint(data: SensorDataCreate, db: AsyncSession =
         created_data = await create_sensor_data(db, new_data)
         return created_data
 
-@app.get("/status")
+@app.get("/status") #현재 센서 상태를 가져오는 엔드포인트 
 async def get_status(db: AsyncSession = Depends(get_db)):
     sensor_data = await get_sensor_data(db, 1)  # Assuming single sensor with ID 1
     if sensor_data:
