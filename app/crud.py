@@ -21,3 +21,5 @@ async def update_sensor_data(db: AsyncSession, sensor_id: int, data: dict):
         await db.commit()
         await db.refresh(sensor_data)
     return sensor_data
+
+#생성, 읽기, 업데이트, 삭제 작업을 처리하는 함수들을 정의
